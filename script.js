@@ -7,14 +7,15 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initial game variables
   let score = 0;
   let gameStarted = false;
-  let gameArenaSize = 600;
-  let cellSize = 20;
+  const gameArenaSize = 600;
+  const cellSize = 20;
   let food = { row: 15, col: 15 };
   let snake = [
     { row: 15, col: 10 },
     { row: 15, col: 9 },
     { row: 15, col: 8 },
   ];
+  let intervalId = null;
 
   // Create the start button and append it to the body
   let startButton = document.createElement("button");
@@ -74,8 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let newFood;
   function createFood() {
     newFood = {
-      row: Math.floor(Math.random() * cellSize),
-      col: Math.floor(Math.random() * cellSize),
+      row: Math.floor(Math.random() * 30),
+      col: Math.floor(Math.random() * 30),
     };
 
     if (newFood !== food && !snake.includes(newFood)) {
@@ -102,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Move Snake
   function moveSnake(x, y) {
-    setInterval(() => {
+    intervalId = setInterval(() => {
       if (gameStarted) {
         let newHead = {
           row: snake[0].row + x,
@@ -118,16 +119,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function changeSnakeDirection(key) {
     if (key === "ArrowUp") {
-      clearInterval();
+      clearInterval(intervalId);
       moveSnake(-1, 0);
     } else if (key === "ArrowDown") {
-      clearInterval();
+      clearInterval(intervalId);
       moveSnake(1, 0);
     } else if (key === "ArrowLeft") {
-      clearInterval();
+      clearInterval(intervalId);
       moveSnake(0, -1);
     } else if (key === "ArrowRight") {
-      clearInterval();
+      clearInterval(intervalId);
       moveSnake(0, 1);
     }
   }

@@ -9,12 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
   let gameStarted = false;
   const gameArenaSize = 600;
   const cellSize = 20;
-  let food = { row: 15, col: 15 };
-  let snake = [
+  const initialFoodPos = { row: 15, col: 15 };
+  const initialSnakePos = [
     { row: 15, col: 10 },
     { row: 15, col: 9 },
     { row: 15, col: 8 },
   ];
+  let food = { ...initialFoodPos };
+  let snake = JSON.parse(JSON.stringify(initialSnakePos));
   let intervalId = null;
   const totalCell = gameArenaSize / cellSize; // 600/20 = 30 cells
   const gameSpeed = 200;
@@ -124,12 +126,8 @@ document.addEventListener("DOMContentLoaded", function () {
     score = 0;
     gameStarted = false;
     intervalId = null;
-    food = { row: 15, col: 15 };
-    snake = [
-      { row: 15, col: 10 },
-      { row: 15, col: 9 },
-      { row: 15, col: 8 },
-    ];
+    food = initialFoodPos;
+    snake = initialSnakePos;
 
     // Remove score board
     const scoreBoard = document.getElementById("score-board");

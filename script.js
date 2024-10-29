@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let food = { ...initialFoodPos };
   let snake = JSON.parse(JSON.stringify(initialSnakePos));
   let intervalId = null;
+  let currentDirection = "right";
 
   // Create the start button and append it to the body
   let startButton = document.createElement("button");
@@ -140,6 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
     intervalId = null;
     food = initialFoodPos;
     snake = initialSnakePos;
+    currentDirection = "right";
 
     // Remove score board
     const scoreBoard = document.getElementById("score-board");
@@ -198,17 +200,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (gameStarted) {
-      if (key === "ArrowUp") {
+      if (key === "ArrowUp" && currentDirection !== "down") {
         clearInterval(intervalId);
+        currentDirection = "up";
         moveSnake(-1, 0);
-      } else if (key === "ArrowDown") {
+      } else if (key === "ArrowDown" && currentDirection !== "up") {
         clearInterval(intervalId);
+        currentDirection = "down";
         moveSnake(1, 0);
-      } else if (key === "ArrowLeft") {
+      } else if (key === "ArrowLeft" && currentDirection !== "right") {
         clearInterval(intervalId);
+        currentDirection = "left";
         moveSnake(0, -1);
-      } else if (key === "ArrowRight") {
+      } else if (key === "ArrowRight" && currentDirection !== "left") {
         clearInterval(intervalId);
+        currentDirection = "right";
         moveSnake(0, 1);
       }
     }

@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
     { row: 15, col: 8 },
   ];
   let intervalId = null;
+  const totalCell = gameArenaSize / cellSize; // 600/20 = 30 cells
+  const gameSpeed = 200;
 
   // Create the start button and append it to the body
   let startButton = document.createElement("button");
@@ -77,8 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     do {
       newFood = {
-        row: Math.floor(Math.random() * 30),
-        col: Math.floor(Math.random() * 30),
+        row: Math.floor(Math.random() * totalCell),
+        col: Math.floor(Math.random() * totalCell),
       };
     } while (snake.some((snakePart) => snakePart.row === newFood.row && snakePart.col === newFood.col));
 
@@ -100,20 +102,47 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Game Over?
+  function isGameOver() {
+    // snake collision check
+    for (let i = 1; i < snake.length; i++) {
+      if (snake[0].row === snake[i].row && snake[0].col === snake[i].col) {
+        return true;
+      }
+    }
+
+    const hitLeftWall = snake[0].row < 0;
+    const hitRightWall = snake[0].row === totalCell;
+    const hitTopWall = snake[0].col < 0;
+    const hitBottomWall = snake[0].col === totalCell;
+    return hitLeftWall || hitRightWall || hitBottomWall || hitTopWall;
+  }
+
   // Move Snake
   function moveSnake(x, y) {
     intervalId = setInterval(() => {
-      if (gameStarted) {
-        let newHead = {
-          row: snake[0].row + x,
-          col: snake[0].col + y,
-        };
-        snake.unshift(newHead);
+      if (isGameOver()) {
+        clearInterval(intervalId);
+        alert("Game Over!!" + "\n" + "Your Score - " + score);
+        document.getElementById("score-board").style.display = "none";
 
-        createDiv(newHead, "snake");
-        growSnake();
+        removeDiv(food, "food");
+
+        snake.forEach((snakePart) => removeDiv(snakePart, "snake"));
+
+        startButton.style.display = "block";
+
+        return;
       }
-    }, 200);
+      let newHead = {
+        row: snake[0].row + x,
+        col: snake[0].col + y,
+      };
+      snake.unshift(newHead);
+
+      createDiv(newHead, "snake");
+      growSnake();
+    }, gameSpeed);
   }
 
   function changeSnakeDirection(key) {

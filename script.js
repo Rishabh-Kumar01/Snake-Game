@@ -4,22 +4,25 @@ document.addEventListener("DOMContentLoaded", function () {
   // Getting important html tags
   const gameArena = document.getElementById("game-arena");
 
-  // Initial game variables
-  let score = 0;
-  let gameStarted = false;
+  // Game constants
   const gameArenaSize = 600;
   const cellSize = 20;
+  const totalCell = gameArenaSize / cellSize; // 600/20 = 30 cells
+  const gameSpeed = 200;
   const initialFoodPos = { row: 15, col: 15 };
   const initialSnakePos = [
     { row: 15, col: 10 },
     { row: 15, col: 9 },
     { row: 15, col: 8 },
   ];
+
+  // Initial game variables
+  let score = 0;
+  let gameStarted = false; // flag to check if game is started or not.
+  let gameInitialized = false; // flag to track if game is ready for key input
   let food = { ...initialFoodPos };
   let snake = JSON.parse(JSON.stringify(initialSnakePos));
   let intervalId = null;
-  const totalCell = gameArenaSize / cellSize; // 600/20 = 30 cells
-  const gameSpeed = 200;
 
   // Create the start button and append it to the body
   let startButton = document.createElement("button");
@@ -31,11 +34,19 @@ document.addEventListener("DOMContentLoaded", function () {
   startButton.addEventListener("click", function () {
     console.log("Start button clicked");
     startButton.style.display = "none";
-    gameStarted = true;
+    initializeGame();
+  });
+
+  function initializeGame() {
+    gameInitialized = true;
     addScoreBoard();
     addFoodAndSnake();
-    moveSnake(0, 1);
-  });
+
+    let instruction = document.createElement("div");
+    instruction.textContent = "Press any arrow key to start";
+    instruction.id = "instruction";
+    document.body.insertBefore(instruction, gameArena.nextSibling);
+  }
 
   // Create the score board and append it to the body before game-arena div
   function addScoreBoard() {
@@ -125,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function resetGame() {
     score = 0;
     gameStarted = false;
+    gameInitialized = false;
     intervalId = null;
     food = initialFoodPos;
     snake = initialSnakePos;
@@ -133,6 +145,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const scoreBoard = document.getElementById("score-board");
     if (scoreBoard) {
       scoreBoard.style.display = "none";
+    }
+
+    // Remove instruction text
+    const instruction = document.getElementById("instruction");
+    if (instruction) {
+      instruction.remove();
     }
 
     // Remove all food elements
@@ -170,25 +188,38 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function changeSnakeDirection(key) {
-    if (key === "ArrowUp") {
-      clearInterval(intervalId);
-      moveSnake(-1, 0);
-    } else if (key === "ArrowDown") {
-      clearInterval(intervalId);
-      moveSnake(1, 0);
-    } else if (key === "ArrowLeft") {
-      clearInterval(intervalId);
-      moveSnake(0, -1);
-    } else if (key === "ArrowRight") {
-      clearInterval(intervalId);
-      moveSnake(0, 1);
+    if (!gameStarted && gameInitialized) {
+      // Remove instruction text when game starts
+      const instruction = document.getElementById("instruction");
+      if (instruction) {
+        instruction.remove();
+      }
+      gameStarted = true;
+    }
+
+    if (gameStarted) {
+      if (key === "ArrowUp") {
+        clearInterval(intervalId);
+        moveSnake(-1, 0);
+      } else if (key === "ArrowDown") {
+        clearInterval(intervalId);
+        moveSnake(1, 0);
+      } else if (key === "ArrowLeft") {
+        clearInterval(intervalId);
+        moveSnake(0, -1);
+      } else if (key === "ArrowRight") {
+        clearInterval(intervalId);
+        moveSnake(0, 1);
+      }
     }
   }
 
   // Event Listener for key down
   document.addEventListener("keydown", function (event) {
-    console.log("Keydown ", event);
-    const key = event.key;
-    changeSnakeDirection(key);
+    if (gameInitialized) {
+      console.log("Keydown ", event);
+      const key = event.key;
+      changeSnakeDirection(key);
+    }
   });
 });

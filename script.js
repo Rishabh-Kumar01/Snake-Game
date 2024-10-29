@@ -219,6 +219,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (gameInitialized) {
       console.log("Keydown ", event);
       const key = event.key;
+
+      if (
+        key !== "ArrowUp" &&
+        key !== "ArrowDown" &&
+        key !== "ArrowLeft" &&
+        key !== "ArrowRight"
+      ) {
+        alert("Invalid Key Pressed. Please press arrow keys to play the game.");
+        return;
+      }
       changeSnakeDirection(key);
     }
   });

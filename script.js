@@ -62,8 +62,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Remove a div element
-  function removeDiv(position) {
-    let divs = document.querySelectorAll("div");
+  function removeDiv(position, className) {
+    const divs = gameArena.querySelectorAll("." + className);
     divs.forEach((div) => {
       if (
         div.style.top === position.row * cellSize + "px" &&
@@ -94,11 +94,12 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("score-board").innerHTML = score;
 
       // todo - add a new food
+      removeDiv(food, "food");
       food = createFood();
       createDiv(food, "food");
     } else {
       const tail = snake.pop();
-      removeDiv(tail);
+      removeDiv(tail, "snake");
     }
   }
 
@@ -118,19 +119,44 @@ document.addEventListener("DOMContentLoaded", function () {
     return hitLeftWall || hitRightWall || hitBottomWall || hitTopWall;
   }
 
+  // Reset Game after Game Over
+  function resetGame() {
+    score = 0;
+    gameStarted = false;
+    intervalId = null;
+    food = { row: 15, col: 15 };
+    snake = [
+      { row: 15, col: 10 },
+      { row: 15, col: 9 },
+      { row: 15, col: 8 },
+    ];
+
+    // Remove score board
+    const scoreBoard = document.getElementById("score-board");
+    if (scoreBoard) {
+      scoreBoard.style.display = "none";
+    }
+
+    // Remove all food elements
+    const foodElements = gameArena.querySelectorAll(".food");
+    foodElements.forEach((element) => element.remove());
+
+    // Remove all snake elements
+    const snakeElements = gameArena.querySelectorAll(".snake");
+    snakeElements.forEach((element) => element.remove());
+
+    // Show start button
+    startButton.style.display = "block";
+  }
+
   // Move Snake
   function moveSnake(x, y) {
     intervalId = setInterval(() => {
       if (isGameOver()) {
         clearInterval(intervalId);
         alert("Game Over!!" + "\n" + "Your Score - " + score);
-        document.getElementById("score-board").style.display = "none";
 
-        removeDiv(food, "food");
-
-        snake.forEach((snakePart) => removeDiv(snakePart, "snake"));
-
-        startButton.style.display = "block";
+        resetGame();
 
         return;
       }

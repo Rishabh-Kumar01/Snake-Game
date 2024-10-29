@@ -72,18 +72,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  let newFood;
   function createFood() {
-    newFood = {
-      row: Math.floor(Math.random() * 30),
-      col: Math.floor(Math.random() * 30),
-    };
+    let newFood;
 
-    if (newFood !== food && !snake.includes(newFood)) {
-      return newFood;
-    }
+    do {
+      newFood = {
+        row: Math.floor(Math.random() * 30),
+        col: Math.floor(Math.random() * 30),
+      };
+    } while (snake.some((snakePart) => snakePart.row === newFood.row && snakePart.col === newFood.col));
 
-    createFood();
+    return newFood;
   }
 
   // Grow snake or not
